@@ -66,10 +66,10 @@
     controller.delegate = self; //用ViewController作为delegate
     controller.image = self.imageView.image;//将显示的图片传给controller以便编辑
     
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];//初始化一个导航控制器
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:controller];//初始化一个导航控制器，并用自己实现的PECropViewController来初始化。
     
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;//如果是iPad要设置一下navigationControllerde 显示方式，此处是按表格形式
     }
     
     [self presentViewController:navigationController animated:YES completion:NULL];
@@ -137,31 +137,31 @@
 }
 
 #pragma mark -
-
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+//定义actionSheet的具体操作
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex    //传入的参数是按钮的index号
 {
-    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];
-    if ([buttonTitle isEqualToString:NSLocalizedString(@"Photo Album", nil)]) {
+    NSString *buttonTitle = [actionSheet buttonTitleAtIndex:buttonIndex];  //获取按钮的名称
+    if ([buttonTitle isEqualToString:NSLocalizedString(@"Photo Album", nil)]) { //用按钮的名称，选择操作！点击photoAlbum执行openPhotoAlbum（）来获取图片
         [self openPhotoAlbum];
-    } else if ([buttonTitle isEqualToString:NSLocalizedString(@"Camera", nil)]) {
+    } else if ([buttonTitle isEqualToString:NSLocalizedString(@"Camera", nil)]) {//点击Camera，调用通过摄像头来获取图片
         [self showCamera];
     }
 }
 
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info  //重新自定义图片获取控制器
 {
-    UIImage *image = info[UIImagePickerControllerOriginalImage];
-    self.imageView.image = image;
+    UIImage *image = info[UIImagePickerControllerOriginalImage];//从info中读取原图片
+    self.imageView.image = image;   //并将读取的图片放到imageView上进行显示
     
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) { //如果是iPad,记得要先将popover取消显示，再做其他事情
         if (self.popover.isPopoverVisible) {
             [self.popover dismissPopoverAnimated:NO];
         }
         
-        [self openEditor:nil];
+        [self openEditor:nil];//将实例化的openEditor实例回收
     } else {
         [picker dismissViewControllerAnimated:YES completion:^{
-            [self openEditor:nil];
+            [self openEditor:nil];  //将实例化的openEditor实例回收
         }];
     }
 }
